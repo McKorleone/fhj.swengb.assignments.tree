@@ -1,4 +1,4 @@
-package fhj.swengb.assignments.tree.rladstaetter
+package fhj.swengb.assignments.tree.pkoerner
 
 import javafx.scene.paint.Color
 
@@ -69,7 +69,7 @@ object Graph {
 
 }
 
-object MathUtil {
+object MathUtil { //start with
 
   /**
     * rounds the given value to 3 decimal places.
@@ -106,6 +106,8 @@ object L2D {
     * @param length the length of the line
     * @param color the color
     * @return
+    *
+    * how can we convert start point and angle into to points
     */
   def apply(start: Pt2D, angle: AngleInDegrees, length: Double, color: Color): L2D = {
     ???
