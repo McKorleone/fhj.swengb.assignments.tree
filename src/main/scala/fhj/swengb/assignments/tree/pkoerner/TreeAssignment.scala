@@ -131,7 +131,7 @@ object Graph {
   def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = tree match {
     case Node(value) => Seq(convert(value))
     case Branch(left, right) => traverse(left)(convert) ++ traverse(right)(convert)
-
+  }
       /**
         * Creates a tree graph.
         *
@@ -191,4 +191,3 @@ object Graph {
       }
 
   }
-}
