@@ -189,5 +189,4 @@ object Graph {
         }
         treeBuilder(start, 0, length, initialAngle)
       }
-
   }
