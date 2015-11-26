@@ -132,61 +132,54 @@ object Graph {
     case Node(value) => Seq(convert(value))
     case Branch(left, right) => traverse(left)(convert) ++ traverse(right)(convert)
   }
-      /**
-        * Creates a tree graph.
-        *
-        * @param start the startpoint (root) of the tree
-        * @param initialAngle initial angle of the tree
-        * @param length the initial length of the tree
-        * @param treeDepth the depth of the tree
-        * @param factor the factor which the length is decreasing for every iteration
-        * @param angle the angle between a branch and the root
-        * @param colorMap color map, by default it is the colormap given in the companion object Graph
-        *
-        * @return a Tree[L2D] which can be traversed by other algorithms
-        */
-      def mkGraph(start: Pt2D,
-                  initialAngle: AngleInDegrees,
-                  length: Double,
-                  treeDepth: Int,
-                  factor: Double = 0.75,
-                  angle: Double = 45.0,
-                  colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
-        assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
+  /**
+    * Creates a tree graph.
+    *
+    * @param start the startpoint (root) of the tree
+    * @param initialAngle initial angle of the tree
+    * @param length the initial length of the tree
+    * @param treeDepth the depth of the tree
+    * @param factor the factor which the length is decreasing for every iteration
+    * @param angle the angle between a branch and the root
+    * @param colorMap color map, by default it is the colormap given in the companion object Graph
+    *
+    * @return a Tree[L2D] which can be traversed by other algorithms
+    */
+  def mkGraph(start: Pt2D,
+              initialAngle: AngleInDegrees,
+              length: Double,
+              treeDepth: Int,
+              factor: Double = 0.75,
+              angle: Double = 45.0,
+              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
+    assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
 
-        def treeBuilder(currentPoint: Pt2D, currentDepth: Int, currentLength: Double, currentAngle: AngleInDegrees): Tree[L2D] = {
-          currentDepth match {
-            case treeDepth =>
-              Branch(
-                Node(L2D(currentPoint, initialAngle - angle, currentLength, colorMap(currentDepth))),
-                Node(L2D(currentPoint, initialAngle + angle, currentLength, colorMap(currentDepth)))
+    def treeBuilder(currentPoint: Pt2D, currentDepth: Int, currentLength: Double, currentAngle: AngleInDegrees, currentColor: Color): Tree[L2D] = {
+      currentDepth match {
+        case `treeDepth` =>
+          Node(L2D(currentPoint, currentAngle, currentLength, currentColor))
+        case _ =>
+          Branch(
+            Node(L2D(currentPoint, currentAngle, currentLength, currentColor)),
+            Branch(
+              treeBuilder(
+                MathUtil.translate(currentPoint, currentAngle, currentLength),
+                currentDepth + 1,
+                currentLength * factor,
+                currentAngle - angle,
+                colorMap(currentDepth)
+              ),
+              treeBuilder(
+                MathUtil.translate(currentPoint, currentAngle, currentLength),
+                currentDepth + 1,
+                currentLength * factor,
+                currentAngle + angle,
+                colorMap(currentDepth)
               )
-            case _ =>
-              Branch(
-                Node(L2D(currentPoint, initialAngle, currentLength, colorMap(currentDepth))),
-                Branch(
-                  Branch(
-                    Node(L2D(currentPoint, initialAngle - angle, currentLength, colorMap(currentDepth))),
-                    treeBuilder(
-                      MathUtil.translate(currentPoint, initialAngle - angle, currentLength),
-                      currentDepth + 1,
-                      currentLength * factor,
-                      initialAngle - angle
-                    )
-                  ),
-                  Branch(
-                    Node(L2D(currentPoint, initialAngle + angle, currentLength, colorMap(currentDepth))),
-                    treeBuilder(
-                      MathUtil.translate(currentPoint, initialAngle + angle, currentLength),
-                      currentDepth + 1,
-                      currentLength * factor,
-                      initialAngle + angle
-                    )
-                  )
-                )
-              )
-          }
-        }
-        treeBuilder(start, 0, length, initialAngle)
+            )
+          )
       }
+    }
+    treeBuilder(start, 0, length, initialAngle, colorMap(0))
   }
+}
