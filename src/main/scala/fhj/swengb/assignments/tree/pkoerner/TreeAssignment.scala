@@ -23,7 +23,7 @@ object MathUtil { //start with
 
   def translate(point: Pt2D, angle: AngleInDegrees, length: Double) = {
     val angleInRadiants:AngleInRadiants = MathUtil.toRadiants(angle)
-    Pt2D(point.x + scala.math.cos(angleInRadiants), point.y + scala.math.sin(angleInRadiants))
+    Pt2D(MathUtil.round(point.x + length * scala.math.cos(angleInRadiants)), MathUtil.round(point.y + length * scala.math.sin(angleInRadiants)))
   }
 
   /**
