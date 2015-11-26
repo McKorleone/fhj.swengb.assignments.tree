@@ -18,7 +18,7 @@ object MathUtil { //start with
     * @return
     */
   def round(value: Double): Double = {
-    scala.math.round(value * 1000) / 1000
+    scala.math.round(value * 1000) / 1000.toDouble
   }
 
   def translate(point: Pt2D, angle: AngleInDegrees, length: Double) = {
@@ -33,7 +33,7 @@ object MathUtil { //start with
     * @return
     */
   def toRadiants(angle: AngleInDegrees): AngleInRadiants = {
-    (angle / 180) * scala.math.Pi
+    (angle / 180.0) * scala.math.Pi
   }
 }
 
