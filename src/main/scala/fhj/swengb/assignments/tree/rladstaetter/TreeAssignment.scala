@@ -40,7 +40,10 @@ object Graph {
     * @return
     */
   def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
-  ???
+    tree match {
+      case Node(l) => Seq(convert(l))
+      case Branch(left, right) => traverse(left)(convert) ++ traverse(right)(convert)
+    }
   }
 
   /**
@@ -64,8 +67,20 @@ object Graph {
               angle: Double = 45.0,
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
     assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
-    ???
- }
+    // NOTE: you have to construct a tree, not deconstruct it!
+
+    def loop(depth: Int, parent: L2D): Tree[L2D] = {
+      depth match {
+        case 0 => Node(parent)
+        case d => Branch(Node(parent),
+          Branch(
+            loop(d - 1, parent.left(factor, angle, colorMap(treeDepth - d))),
+            loop(d - 1, parent.right(factor, angle, colorMap(treeDepth - d)))))
+      }
+    }
+
+    loop(treeDepth, L2D(start, initialAngle, length, colorMap(0)))
+  }
 
 }
 
@@ -78,7 +93,7 @@ object MathUtil {
     * @return
     */
   def round(value: Double): Double = {
-    ???
+    BigDecimal(value).setScale(3, RoundingMode.HALF_UP).doubleValue()
   }
 
   /**
@@ -88,7 +103,7 @@ object MathUtil {
     * @return
     */
   def toRadiants(angle: AngleInDegrees): AngleInRadiants = {
-   ???
+    angle * Math.PI / 180
   }
 }
 
@@ -108,7 +123,10 @@ object L2D {
     * @return
     */
   def apply(start: Pt2D, angle: AngleInDegrees, length: Double, color: Color): L2D = {
-    ???
+    val angleInRadiants = toRadiants(angle)
+    val end = Pt2D(start.x + length * Math.cos(angleInRadiants),
+      start.y + length * Math.sin(angleInRadiants)).normed
+    new L2D(start, end, color)
   }
 
 
